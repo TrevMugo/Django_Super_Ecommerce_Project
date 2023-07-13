@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Product
+from django.contrib import messages
 
 
 def index(request):
@@ -32,3 +33,28 @@ def all_products(request):
     products = Product.objects.all()
     context = {"products": products}
     return render(request, 'products.html', context)
+
+
+def delete_product(request, id):
+    product = Product.objects.get(id=id)
+    product.delete()
+    messages.success(request, 'The product has been deleted successfully!')
+    return redirect('all_products')
+
+
+def update_product(request, id):
+    product = Product.objects.get(id=id)
+    context = {"product": product}
+    if request.method == "POST":
+        updated_name = request.POST.get('p-name')
+        updated_qtty = request.POST.get('p-qtty')
+        updated_size = request.POST.get('p-size')
+        updated_price = request.POST.get('p-price')
+        product.name = updated_name
+        product.qtty = updated_qtty
+        product.size = updated_size
+        product.price = updated_price
+        product.save()
+        messages.success(request, 'The product has been updated successfully!')
+        return redirect('all_products')
+    return render(request, 'update_product.html', context)
