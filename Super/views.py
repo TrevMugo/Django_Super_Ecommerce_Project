@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
 from .models import Product
 from django.contrib import messages
+from .forms import UserRegistrationForm
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
     return render(request, 'index.html')
 
 
+@login_required
 def add_product(request):
     if request.method == "POST":
         prod_name = request.POST.get("p-name")
@@ -29,12 +32,14 @@ def add_product(request):
     return render(request, 'add-product.html')
 
 
+@login_required
 def all_products(request):
     products = Product.objects.all()
     context = {"products": products}
     return render(request, 'products.html', context)
 
 
+@login_required
 def delete_product(request, id):
     product = Product.objects.get(id=id)
     product.delete()
@@ -42,6 +47,7 @@ def delete_product(request, id):
     return redirect('all_products')
 
 
+@login_required
 def update_product(request, id):
     product = Product.objects.get(id=id)
     context = {"product": product}
@@ -58,3 +64,15 @@ def update_product(request, id):
         messages.success(request, 'The product has been updated successfully!')
         return redirect('all_products')
     return render(request, 'update_product.html', context)
+
+
+def register(request):
+    if request.method == "POST":
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "User registered successfully!")
+            return redirect('user-registration')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'register.html', {'form': form})

@@ -1,0 +1,12 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block content %}
+    <div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <legend>You've been logged out!</legend>
+        <a class="text-center btn btn-info" href="{% url 'user-login' %}">Login</a>
+    </div>
+        <div class="col-4"></div>
+    </div>
+{% endblock %}
